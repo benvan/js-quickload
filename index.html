@@ -1,0 +1,131 @@
+<html>
+
+<head>
+<style>
+
+body{
+padding-top:50px;
+transition:1s;
+}
+
+body.success{
+background-color:rgb(186, 228, 186);
+}
+
+body.failure{
+background-color:rgb(228, 186, 186);
+}
+
+.hidden{ opacity:0 !important; }
+
+.exported{
+font-family:verdana;
+width: 500px;
+margin: 20px auto;
+font-size: 20pt;
+opacity:1;
+transition:1s;
+}
+
+.message{
+color:rgb(86, 161, 255);
+font-size:20pt;
+padding-right:15px;
+display:inline-block;
+}
+
+.url{
+text-align: center;
+}
+
+.spinner {
+height:40px;
+width:40px;
+margin:20px auto;
+position:relative;
+-webkit-animation: rotation .6s infinite linear;
+-moz-animation: rotation .6s infinite linear;
+-o-animation: rotation .6s infinite linear;
+animation: rotation .6s infinite linear;
+border-left:6px solid rgba(0,174,239,.15);
+border-right:6px solid rgba(0,174,239,.15);
+border-bottom:6px solid rgba(0,174,239,.15);
+border-top:6px solid rgba(0,174,239,.8);
+border-radius:100%;
+}
+
+@-webkit-keyframes rotation {
+from {-webkit-transform: rotate(0deg);}
+to {-webkit-transform: rotate(359deg);}
+}
+
+@-moz-keyframes rotation {
+from {-moz-transform: rotate(0deg);}
+to {-moz-transform: rotate(359deg);}
+}
+
+@-o-keyframes rotation {
+from {-o-transform: rotate(0deg);}
+to {-o-transform: rotate(359deg);}
+}
+
+@keyframes rotation {
+from {transform: rotate(0deg);}
+to {transform: rotate(359deg);}
+}
+</style>
+</head>
+
+<body>
+<div class="url">
+<input placeholder="http://your-library-url" id="scr" style="width:50%; border: 1px solid black; padding:15px;">
+</div>
+<div class='exported hidden'>
+  <span class='message'>You have exported:</span><span id='exportedList'></span>
+</div>
+<script>
+
+  var originalWindowKeys = Object.keys(window).slice();
+
+  var exported = function(){
+    var allKeys = Object.keys(window);
+    var newKeys = allKeys.filter(function(k){ 
+      return originalWindowKeys.indexOf(k) == -1;
+    });
+    return newKeys;
+  }
+
+  var log = function(x){ return function(){ console.log(x) } };
+
+  var loaded = function(){
+    document.getElementsByClassName('spinner')[0].remove();
+    document.body.setAttribute('class','success');
+    document.getElementsByClassName('exported')[0].setAttribute('class','exported');//unhide
+    document.getElementById('exportedList').innerHTML = exported().join(', ');
+  }
+
+  var failed = function(){
+    document.getElementsByClassName('spinner')[0].remove();
+    document.body.setAttribute('class','failure');
+  }
+
+  var scr = document.getElementById('scr');
+  scr.addEventListener('change', function(){
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = scr.value;
+
+    script.addEventListener('load', loaded, false);
+    script.addEventListener('error', failed, false);
+
+    var spinner = document.createElement('div');
+    spinner.setAttribute('class','spinner');
+
+    document.body.appendChild(spinner);
+
+    document.getElementsByTagName('head')[0].appendChild(script);
+  });
+
+</script>
+</body>
+</html>
