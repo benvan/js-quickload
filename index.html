@@ -18,6 +18,19 @@ background-color:rgb(228, 186, 186);
 
 .hidden{ opacity:0 !important; }
 
+.title{
+font-family:verdana;
+width: 500px;
+margin: 20px auto;
+font-size: 20pt;
+text-align:center;
+}
+
+.title span{
+color: black;
+font-size: 15pt;
+}
+
 .exported{
 font-family:verdana;
 width: 500px;
@@ -78,6 +91,9 @@ to {transform: rotate(359deg);}
 
 <body>
 <a href="https://github.com/benvan/js-quickload"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png" alt="Fork me on GitHub"></a>
+<div class='title'>
+  <span>Paste/search a library URL - I will load it</span>
+</div>
 <div class="url">
 <datalist id="packages"> </datalist>
 <input placeholder="http://your-library-url" list="packages" id="scr" style="width:50%; border: 1px solid black; padding:15px;">
@@ -108,17 +124,23 @@ to {transform: rotate(359deg);}
     document.getElementById('exportedList').innerHTML = exported().join(', ');
   }
 
-  var failed = function(){
+  var failed = function(evt){
     document.getElementsByClassName('spinner')[0].remove();
     document.body.setAttribute('class','failure');
+    evt.target.parentElement.removeChild(evt.target);
   }
 
   var scr = document.getElementById('scr');  
   scr.addEventListener('change', function(){
     var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = scr.value;
+    
+    var rawUrl = scr.value;
+    var scriptSrc = ((rawUrl.indexOf('://') == -1 && rawUrl.indexOf('//') != 0)
+      ? '//' : '') // if no protocol provided, allow browser to choose.
+      + rawUrl
 
+    script.type = 'text/javascript';
+    script.src = scriptSrc;
     script.addEventListener('load', loaded, false);
     script.addEventListener('error', failed, false);
 
